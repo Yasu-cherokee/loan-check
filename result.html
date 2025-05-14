@@ -112,7 +112,7 @@
         // ✅ LINE送信用処理（GASへPOST）
         document.getElementById("sendToLine").addEventListener("click", () => {
           const message = `あなたの診断結果：${grade}\n金利目安：${rate}\n\n今後のローン選びの参考にしてください！`;
-          fetch("https://script.google.com/macros/s/AKfycbwYyX5CAdgHSz9gBLpuaUHbgSFwf6seGeVdMZVrBKlvEtn9gD1k4w8VeE8o-RohOak5Vg/exec", {
+          fetch("https://script.google.com/macros/s/AKfycbz9D4v1N022OMVNl0_nPU08hYQ4oAk2ggcaG6zPL2-SZsu4ps9xdEFOYj79WSMCZkZV/exec", {
             method: "POST",
             mode: "no-cors",
             headers: {
