@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ローン簡易診断</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; max-width: 500px; margin: auto; }
+    label { display: block; margin-top: 15px; font-weight: bold; }
+    input, select, button {
+      width: 100%; padding: 10px; margin-top: 5px; font-size: 16px;
+    }
+    button {
+      margin-top: 20px; background-color: #007bff; color: white; border: none; border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h2>ローン簡易診断</h2>
+
+  <form id="diagnosisForm">
+    <label>年齢：<input type="number" id="age" required /></label>
+
+    <label>年収：
+      <select id="income">
+        <option value="300">300万円以上</option>
+        <option value="200">200〜299万円</option>
+        <option value="199">199万円以下</option>
+      </select>
+    </label>
+
+    <label>雇用形態：
+      <select id="jobType">
+        <option value="正社員">正社員</option>
+        <option value="契約・派遣・自営業">契約・派遣・自営業</option>
+        <option value="学生・アルバイト">学生・アルバイト</option>
+      </select>
+    </label>
+
+    <label>勤続年数（年）：<input type="number" id="years" min="0" required /></label>
+    <label>借入希望額（万円）：<input type="number" id="amount" required /></label>
+
+    <label>他社借入：
+      <select id="debt">
+        <option value="なし">なし</option>
+        <option value="あり">あり</option>
+      </select>
+    </label>
+
+    <button type="submit">診断する</button>
+  </form>
+
+  <script>
+    document.getElementById('diagnosisForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const age = parseInt(document.getElementById('age').value);
+      const income = parseInt(document.getElementById('income').value);
+      const jobType = document.getElementById('jobType').value;
+      const years = parseInt(document.getElementById('years').value);
+      const amount = parseInt(document.getElementById('amount').value);
+      const debt = document.getElementById('debt').value;
+
+      localStorage.setItem("formData", JSON.stringify({ age, income, jobType, years, amount, debt }));
+
+      window.location.href = "result.html";
+    });
+  </script>
+</body>
+</html>
