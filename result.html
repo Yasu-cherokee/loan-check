@@ -35,96 +35,94 @@
     const data = JSON.parse(localStorage.getItem("formData"));
     if (!data) {
       document.body.innerHTML = "<p>診断データが見つかりません。<br><a href='diagnosis.html'>こちらから診断してください。</a></p>";
-    }
-
-    const {
-      age,
-      income,
-      jobType,
-      years: rawYears,
-      amount,
-      debt
-    } = data;
-
-    const years = parseInt(rawYears);
-    const ltv = (income && amount) ? amount / income : NaN;
-
-    if (isNaN(ltv) || isNaN(years) || isNaN(income) || isNaN(amount)) {
-      document.getElementById("grade").textContent = "診断データが不正です";
-      return;
-    }
-
-    let score = 0;
-
-    if (age < 18 || age > 65) score = -99;
-    else {
-      if (income >= 300) score += 2;
-      else if (income >= 200) score += 1;
-
-      if (jobType === "正社員") score += 2;
-      else if (jobType === "契約・派遣・自営業") score += 1;
-
-      if (years >= 2) score += 2;
-      else if (years >= 1) score += 1;
-
-      if (ltv < 0.3) score += 2;
-      else if (ltv < 0.5) score += 1;
-
-      if (debt === "なし") score += 1;
-    }
-
-    let grade = "";
-    let rate = "";
-    let lowRate = 0, highRate = 0;
-    const advice = [];
-
-    if (score === -99) {
-      grade = "診断対象外";
-      rate = "-";
-      advice.push("18歳未満または高齢のため、診断対象外です。");
-    } else if (score >= 8) {
-      grade = "HIGH（通過可能性高）";
-      rate = "2.5% ～ 3.5%";
-      lowRate = 0.025; highRate = 0.035;
-    } else if (score >= 5) {
-      grade = "MEDIUM（通過可能性あり）";
-      rate = "3.5% ～ 5.0%";
-      lowRate = 0.035; highRate = 0.050;
-      if (ltv > 0.5) advice.push("借入希望額を下げると通過率が上がる可能性があります。");
-      if (years < 1) advice.push("勤続年数が1年以上になると評価が上がります。");
     } else {
-      grade = "LOW（通過は難しい）";
-      rate = "5.0%以上 または審査困難";
-      lowRate = 0.05; highRate = 0.08;
-      advice.push("借入希望額が高すぎる可能性があります。");
-      if (jobType !== "正社員") advice.push("安定した雇用形態（正社員など）が有利になります。");
-      if (debt === "あり") advice.push("他社借入を減らすことで通過しやすくなります。");
+      const {
+        age,
+        income,
+        jobType,
+        years: rawYears,
+        amount,
+        debt
+      } = data;
+
+      const years = parseInt(rawYears);
+      const ltv = (income && amount) ? amount / income : NaN;
+
+      if (isNaN(ltv) || isNaN(years) || isNaN(income) || isNaN(amount)) {
+        document.body.innerHTML = "<p>診断データが不正です。<br><a href='diagnosis.html'>もう一度診断をやり直してください。</a></p>";
+      } else {
+        let score = 0;
+
+        if (age < 18 || age > 65) score = -99;
+        else {
+          if (income >= 300) score += 2;
+          else if (income >= 200) score += 1;
+
+          if (jobType === "正社員") score += 2;
+          else if (jobType === "契約・派遣・自営業") score += 1;
+
+          if (years >= 2) score += 2;
+          else if (years >= 1) score += 1;
+
+          if (ltv < 0.3) score += 2;
+          else if (ltv < 0.5) score += 1;
+
+          if (debt === "なし") score += 1;
+        }
+
+        let grade = "";
+        let rate = "";
+        let lowRate = 0, highRate = 0;
+        const advice = [];
+
+        if (score === -99) {
+          grade = "診断対象外";
+          rate = "-";
+          advice.push("18歳未満または高齢のため、診断対象外です。");
+        } else if (score >= 8) {
+          grade = "HIGH（通過可能性高）";
+          rate = "2.5% ～ 3.5%";
+          lowRate = 0.025; highRate = 0.035;
+        } else if (score >= 5) {
+          grade = "MEDIUM（通過可能性あり）";
+          rate = "3.5% ～ 5.0%";
+          lowRate = 0.035; highRate = 0.050;
+          if (ltv > 0.5) advice.push("借入希望額を下げると通過率が上がる可能性があります。");
+          if (years < 1) advice.push("勤続年数が1年以上になると評価が上がります。");
+        } else {
+          grade = "LOW（通過は難しい）";
+          rate = "5.0%以上 または審査困難";
+          lowRate = 0.05; highRate = 0.08;
+          advice.push("借入希望額が高すぎる可能性があります。");
+          if (jobType !== "正社員") advice.push("安定した雇用形態（正社員など）が有利になります。");
+          if (debt === "あり") advice.push("他社借入を減らすことで通過しやすくなります。");
+        }
+
+        if (advice.length === 0) {
+          advice.push("特に改善点は見当たりません。引き続き安定した収入・雇用を維持しましょう。");
+        }
+
+        function calcMonthly(rate, years, amount) {
+          const r = rate / 12;
+          const n = years * 12;
+          return Math.floor((amount * 10000) * r / (1 - Math.pow(1 + r, -n)));
+        }
+
+        document.getElementById("grade").textContent = grade;
+        document.getElementById("rate").textContent = rate;
+
+        if (lowRate && highRate) {
+          document.getElementById("lowPay").textContent = `金利${(lowRate*100).toFixed(1)}%：月々 ${calcMonthly(lowRate, 5, 100).toLocaleString()}円`;
+          document.getElementById("highPay").textContent = `金利${(highRate*100).toFixed(1)}%：月々 ${calcMonthly(highRate, 5, 100).toLocaleString()}円`;
+        }
+
+        advice.forEach(a => {
+          const li = document.createElement("li");
+          li.textContent = a;
+          document.getElementById("adviceList").appendChild(li);
+        });
+      }
     }
-
-    // ✅ アドバイスが1件もない場合の補足文
-    if (advice.length === 0) {
-      advice.push("特に改善点は見当たりません。引き続き安定した収入・雇用を維持しましょう。");
-    }
-
-    function calcMonthly(rate, years, amount) {
-      const r = rate / 12;
-      const n = years * 12;
-      return Math.floor((amount * 10000) * r / (1 - Math.pow(1 + r, -n)));
-    }
-
-    document.getElementById("grade").textContent = grade;
-    document.getElementById("rate").textContent = rate;
-
-    if (lowRate && highRate) {
-      document.getElementById("lowPay").textContent = `金利${(lowRate*100).toFixed(1)}%：月々 ${calcMonthly(lowRate, 5, 100).toLocaleString()}円`;
-      document.getElementById("highPay").textContent = `金利${(highRate*100).toFixed(1)}%：月々 ${calcMonthly(highRate, 5, 100).toLocaleString()}円`;
-    }
-
-    advice.forEach(a => {
-      const li = document.createElement("li");
-      li.textContent = a;
-      document.getElementById("adviceList").appendChild(li);
-    });
   </script>
 </body>
 </html>
