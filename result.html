@@ -39,6 +39,7 @@
 
     const { age, income, jobType, years, amount, debt } = data;
     let score = 0;
+    const ltv = amount / income; // # 修正：ltvをここで事前に定義
 
     // 判定ロジック
     if (age < 18 || age > 65) score = -99; // 強制NG
@@ -52,7 +53,6 @@
       if (years >= 2) score += 2;
       else if (years >= 1) score += 1;
 
-      const ltv = amount / income; // 借入希望額 ÷ 年収
       if (ltv < 0.3) score += 2;
       else if (ltv < 0.5) score += 1;
 
