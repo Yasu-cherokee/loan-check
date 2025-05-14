@@ -31,6 +31,7 @@
   </div>
   <button onclick="location.href='diagnosis.html'">診断をやり直す</button>
   <button id="sendToLine">LINEで診断結果を受け取る</button>
+  <button id="testFetch">GAS通信テスト</button>
 
   <script>
     const data = JSON.parse(localStorage.getItem("formData"));
@@ -124,6 +125,11 @@
             })
           });
           alert("LINEに診断結果を送信しました！");
+        });
+
+        document.getElementById("testFetch").addEventListener("click", () => {
+            fetch("https://script.google.com/macros/s/【GASのURL】/exec?test=1")
+                .then(() => alert("GASにリクエストを送りました！"));
         });
       }
     }
