@@ -30,51 +30,40 @@
     <ul id="adviceList"></ul>
   </div>
   <button onclick="location.href='diagnosis.html'">診断をやり直す</button>
+  <button id="sendToLine">LINEで診断結果を受け取る</button>
 
   <script>
     const data = JSON.parse(localStorage.getItem("formData"));
     if (!data) {
       document.body.innerHTML = "<p>診断データが見つかりません。<br><a href='diagnosis.html'>こちらから診断してください。</a></p>";
     } else {
-      const {
-        age,
-        income,
-        jobType,
-        years: rawYears,
-        amount,
-        debt
-      } = data;
-
+      const { age, income, jobType, years: rawYears, amount, debt } = data;
       const years = parseInt(rawYears);
       const ltv = (income && amount) ? amount / income : NaN;
-
+  
       if (isNaN(ltv) || isNaN(years) || isNaN(income) || isNaN(amount)) {
         document.body.innerHTML = "<p>診断データが不正です。<br><a href='diagnosis.html'>もう一度診断をやり直してください。</a></p>";
       } else {
         let score = 0;
-
+  
         if (age < 18 || age > 65) score = -99;
         else {
           if (income >= 300) score += 2;
           else if (income >= 200) score += 1;
-
           if (jobType === "正社員") score += 2;
           else if (jobType === "契約・派遣・自営業") score += 1;
-
           if (years >= 2) score += 2;
           else if (years >= 1) score += 1;
-
           if (ltv < 0.3) score += 2;
           else if (ltv < 0.5) score += 1;
-
           if (debt === "なし") score += 1;
         }
-
+  
         let grade = "";
         let rate = "";
         let lowRate = 0, highRate = 0;
         const advice = [];
-
+  
         if (score === -99) {
           grade = "診断対象外";
           rate = "-";
@@ -97,29 +86,44 @@
           if (jobType !== "正社員") advice.push("安定した雇用形態（正社員など）が有利になります。");
           if (debt === "あり") advice.push("他社借入を減らすことで通過しやすくなります。");
         }
-
+  
         if (advice.length === 0) {
           advice.push("特に改善点は見当たりません。引き続き安定した収入・雇用を維持しましょう。");
         }
-
+  
         function calcMonthly(rate, years, amount) {
           const r = rate / 12;
           const n = years * 12;
           return Math.floor((amount * 10000) * r / (1 - Math.pow(1 + r, -n)));
         }
-
+  
         document.getElementById("grade").textContent = grade;
         document.getElementById("rate").textContent = rate;
-
         if (lowRate && highRate) {
           document.getElementById("lowPay").textContent = `金利${(lowRate*100).toFixed(1)}%：月々 ${calcMonthly(lowRate, 5, 100).toLocaleString()}円`;
           document.getElementById("highPay").textContent = `金利${(highRate*100).toFixed(1)}%：月々 ${calcMonthly(highRate, 5, 100).toLocaleString()}円`;
         }
-
         advice.forEach(a => {
           const li = document.createElement("li");
           li.textContent = a;
           document.getElementById("adviceList").appendChild(li);
+        });
+  
+        // ✅ LINE送信用処理（GASへPOST）
+        document.getElementById("sendToLine").addEventListener("click", () => {
+          const message = `あなたの診断結果：${grade}\n金利目安：${rate}\n\n今後のローン選びの参考にしてください！`;
+          fetch("https://script.google.com/macros/s/https://script.google.com/macros/s/AKfycbwYyX5CAdgHSz9gBLpuaUHbgSFwf6seGeVdMZVrBKlvEtn9gD1k4w8VeE8o-RohOak5Vg/exec", {
+            method: "POST",
+            mode: "no-cors",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              to: "3220tomi",
+              message: message
+            })
+          });
+          alert("LINEに診断結果を送信しました！");
         });
       }
     }
