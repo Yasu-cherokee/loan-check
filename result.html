@@ -112,14 +112,14 @@
         // ✅ LINE送信用処理（GASへPOST）
         document.getElementById("sendToLine").addEventListener("click", () => {
           const message = `あなたの診断結果：${grade}\n金利目安：${rate}\n\n今後のローン選びの参考にしてください！`;
-          fetch("https://script.google.com/macros/s/【ここにGASの/exec URL】", {
+          fetch("https://script.google.com/macros/s/AKfycbxk_vIjHe8jgxrQtd-F1jFH8GYkcfnROkY6jWP8KY8yzQdUiQAKmOQaivAe-ywUQFWo/exec", {
             method: "POST",
             mode: "no-cors",
             headers: {
               "Content-Type": "application/json"
             },
             body: JSON.stringify({
-              to: "【ここにあなたのuserIdを貼る】",
+              to: "Ueb91f262432375b944848ec5bfffed60",
               message: message
             })
           });
