@@ -32,14 +32,26 @@
   <button onclick="location.href='diagnosis.html'">診断をやり直す</button>
 
   <script>
+    // 入力データを読み込み
     const data = JSON.parse(localStorage.getItem("formData"));
     if (!data) {
       document.body.innerHTML = "<p>診断データが見つかりません。<br><a href='diagnosis.html'>こちらから診断してください。</a></p>";
     }
 
-    const { age, income, jobType, years, amount, debt } = data;
+    // データ展開＋数値型変換（# 修正）
+    const {
+      age,
+      income,
+      jobType,
+      years: rawYears,
+      amount,
+      debt
+    } = data;
+
+    const years = parseInt(rawYears); // # 勤続年数を数値に明示
+    const ltv = amount / income;      // # 借入希望額 ÷ 年収を先に定義
+
     let score = 0;
-    const ltv = amount / income; // # 修正：ltvをここで事前に定義
 
     // 判定ロジック
     if (age < 18 || age > 65) score = -99; // 強制NG
@@ -59,11 +71,13 @@
       if (debt === "なし") score += 1;
     }
 
+    // 診断結果表示用変数
     let grade = "";
     let rate = "";
     let lowRate = 0, highRate = 0;
     const advice = [];
 
+    // 診断結果分岐
     if (score === -99) {
       grade = "診断対象外";
       rate = "-";
@@ -76,8 +90,10 @@
       grade = "MEDIUM（通過可能性あり）";
       rate = "3.5% ～ 5.0%";
       lowRate = 0.035; highRate = 0.050;
-      if (ltv > 0.5) advice.push("借入希望額を下げると通過率が上がる可能性があります。");
-      if (years < 1) advice.push("勤続年数が1年以上になると評価が上がります。");
+
+      // # 修正：ltvやyearsが安全な場合のみアドバイス表示
+      if (!isNaN(ltv) && ltv > 0.5) advice.push("借入希望額を下げると通過率が上がる可能性があります。");
+      if (!isNaN(years) && years < 1) advice.push("勤続年数が1年以上になると評価が上がります。");
     } else {
       grade = "LOW（通過は難しい）";
       rate = "5.0%以上 または審査困難";
@@ -94,8 +110,10 @@
       return Math.floor((amount * 10000) * r / (1 - Math.pow(1 + r, -n)));
     }
 
+    // 表示処理
     document.getElementById("grade").textContent = grade;
     document.getElementById("rate").textContent = rate;
+
     if (lowRate && highRate) {
       document.getElementById("lowPay").textContent = `金利${(lowRate*100).toFixed(1)}%：月々 ${calcMonthly(lowRate, 5, 100).toLocaleString()}円`;
       document.getElementById("highPay").textContent = `金利${(highRate*100).toFixed(1)}%：月々 ${calcMonthly(highRate, 5, 100).toLocaleString()}円`;
