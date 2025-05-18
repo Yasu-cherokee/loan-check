@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>自動車ローン診断</title>
+  <meta charset="UTF-8">
+  <title>自動車ローン診断ツール</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body { font-family: sans-serif; text-align: center; padding: 50px; }
-    h1 { font-size: 24px; }
-    button {
-      padding: 12px 24px;
-      font-size: 18px;
-      border: none;
-      background-color: #007bff;
-      color: white;
-      border-radius: 6px;
-      cursor: pointer;
+    body { font-family: sans-serif; padding: 2rem; max-width: 600px; margin: auto; line-height: 1.6; }
+    h1 { color: #007bff; }
+    a.button {
+      display: inline-block; padding: 10px 20px; background: #007bff; color: #fff;
+      text-decoration: none; border-radius: 5px; margin-top: 1rem;
     }
   </style>
 </head>
 <body>
   <h1>自動車ローン診断ツール</h1>
-  <p>あなたのローン通過可能性を今すぐ診断できます。</p>
-  <button onclick="location.href='diagnosis.html'">診断スタート</button>
+  <p>このサービスは、自動車ローンの審査に通過する可能性を簡易的にチェックできる無料ツールです。</p>
+  <p>年齢や年収、勤続年数などの情報をもとに、ローン通過可能性・想定金利・改善アドバイスを表示します。</p>
+
+  <a href="diagnosis.html" class="button">診断を始める</a>
+
+  <hr>
+  <h2>運営者情報</h2>
+  <p>個人で運営しています。副業として診断ツールを実験的に開発中です。</p>
+  <p>お問い合わせ先：loan-check@example.com（※ダミー可）</p>
 </body>
 </html>
