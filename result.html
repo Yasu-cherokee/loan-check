@@ -21,7 +21,7 @@
   <div class="box">
     <p>通過可能性：<span id="grade" class="highlight"></span></p>
     <p>想定金利：<span id="rate" class="highlight"></span></p>
-    <p>月々の返済目安（借入100万円・5年返済）：</p>
+    <p>月々の返済目安（借入希望額を5年で返済した場合）：</p>
     <ul>
       <li id="lowPay"></li>
       <li id="highPay"></li>
@@ -29,7 +29,9 @@
     <p>アドバイス：</p>
     <ul id="adviceList"></ul>
   </div>
+
   <button onclick="location.href='diagnosis.html'">診断をやり直す</button>
+  <button onclick="location.href='index.html'">トップページに戻る</button>
 
   <script>
     const data = JSON.parse(localStorage.getItem("formData"));
@@ -99,9 +101,12 @@
         document.getElementById("grade").textContent = grade;
         document.getElementById("rate").textContent = rate;
         if (lowRate && highRate) {
-          document.getElementById("lowPay").textContent = `金利${(lowRate*100).toFixed(1)}%：月々 ${calcMonthly(lowRate, 5, 100).toLocaleString()}円`;
-          document.getElementById("highPay").textContent = `金利${(highRate*100).toFixed(1)}%：月々 ${calcMonthly(highRate, 5, 100).toLocaleString()}円`;
+          document.getElementById("lowPay").textContent =
+            `金利${(lowRate * 100).toFixed(1)}%：月々 ${calcMonthly(lowRate, 5, amount).toLocaleString()}円`;
+          document.getElementById("highPay").textContent =
+            `金利${(highRate * 100).toFixed(1)}%：月々 ${calcMonthly(highRate, 5, amount).toLocaleString()}円`;
         }
+
         advice.forEach(a => {
           const li = document.createElement("li");
           li.textContent = a;
