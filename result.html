@@ -21,7 +21,7 @@
   <div class="box">
     <p>通過可能性：<span id="grade" class="highlight"></span></p>
     <p>想定金利：<span id="rate" class="highlight"></span></p>
-    <p>月々の返済目安（借入希望額を5年で返済した場合）：</p>
+    <p id="repaymentTitle"></p> <!-- 借入額を表示する行 -->
     <ul>
       <li id="lowPay"></li>
       <li id="highPay"></li>
@@ -98,8 +98,12 @@
           return Math.floor((amount * 10000) * r / (1 - Math.pow(1 + r, -n)));
         }
 
+        // 金額表示の見出しを動的に設定
         document.getElementById("grade").textContent = grade;
         document.getElementById("rate").textContent = rate;
+        document.getElementById("repaymentTitle").textContent =
+          `月々の返済目安（${amount}万円を5年で返済した場合）：`;
+
         if (lowRate && highRate) {
           document.getElementById("lowPay").textContent =
             `金利${(lowRate * 100).toFixed(1)}%：月々 ${calcMonthly(lowRate, 5, amount).toLocaleString()}円`;
